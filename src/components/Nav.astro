@@ -1,0 +1,46 @@
+---
+const routes = [
+  ["Home", "/"],
+  ["Fruits", "/fruits"],
+  ["Page 2", "/page2"],
+];
+---
+
+<div hx-boost="true">
+  <nav>
+    <ul>
+      <li>
+        <a class="contrast" href={routes[0][1]} role="button">{routes[0][0]}</a>
+      </li>
+    </ul>
+    <ul>
+      {
+        routes.slice(1).map(([title, path]) => (
+          <li>
+            <a href={path}>{title}</a>
+          </li>
+        ))
+      }
+      <li>User</li>
+      <li>
+        <button
+          x-data
+          @click={`isDarkTheme = isDarkTheme ? '' : 'dark'; localStorage.theme = isDarkTheme && 'dark';`}
+          class="flex align-center outline secondary"
+        >
+          <span
+            class="material-symbols-outlined"
+            x-text={`isDarkTheme ? "light_mode" : "dark_mode"`}
+          >
+            book</span
+          >
+        </button>
+      </li>
+    </ul>
+  </nav>
+</div>
+<style lang="scss">
+  div {
+    padding: 0.5rem 1rem;
+  }
+</style>

@@ -1,0 +1,65 @@
+---
+import Nav from "../components/Nav.astro";
+import Toaster from "../components/Toaster.astro";
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html
+  lang="en"
+  x-data="{ isDarkTheme: localStorage.theme }"
+  :data-theme="isDarkTheme ? 'dark': 'light'"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+    />
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+</html>
+<body>
+  <Nav />
+  <Toaster />
+  <main class="container">
+    <slot />
+  </main>
+</body>
+
+<style is:global lang="scss">
+  :root {
+    font-family: Helvetica, Arial, sans-serif;
+    --form-element-spacing-vertical: 0.6rem;
+    --form-element-spacing-horizontal: 0.75rem;
+    --typography-spacing-vertical: 0.5rem;
+  }
+
+  dialog {
+    transition:
+      opacity 0.5s ease-in-out,
+      transform 0.5s ease-in-out;
+    transform: translateY(200px);
+    opacity: 0;
+    &[open] {
+      transform: translateY(0px);
+      opacity: 1;
+    }
+    article > header {
+      margin-bottom: 1rem;
+    }
+  }
+</style>
