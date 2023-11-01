@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserAccount {
+  id String @id @default(cuid())
+  username String
+  password String
+  token String? @unique
+  Salt String
+  DateCreated DateTime @default(now())
+  DateUpdated DateTime @updatedAt
+}
+
+model User {
+  id    String     @id @default(cuid())
+  email String  @unique
+  name  String?
+  fruits Fruit[]
+}
+
+model Fruit {
+  id        String     @id @default(cuid())
+  name      String
+  size      String
+  isEaten     Boolean @default(false)
+  owner     User    @relation(fields: [ownerId], references: [id])
+  ownerId   String
+}

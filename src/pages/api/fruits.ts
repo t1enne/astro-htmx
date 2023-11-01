@@ -1,22 +1,33 @@
+import type { Fruit } from "@prisma/client";
 import type { APIRoute } from "astro";
-import myDB, { type IEntry } from "../../scripts/db";
+import { prisma } from "../../../prisma/seed";
 
 export const GET: APIRoute = async ({}) => {
   return new Response("get request");
 };
 
 export const POST: APIRoute = async ({ url, request }) => {
-  let SUCCESS = false;
   const formData = await request.formData();
-  const body = Object.fromEntries(formData.entries()) as unknown as IEntry;
-  const { id, fruit, size } = body;
-  if (id) { // update existing
-    SUCCESS = myDB.update(body);
+  const body = Object.fromEntries(formData.entries()) as unknown as Fruit;
+  let savedFruit: Fruit;
+  if (body.id) {
+    savedFruit = await prisma.fruit.update({
+      data: {
+        ...body,
+        isEaten: Boolean(body.isEaten),
+      },
+      where: {
+        id: body.id,
+      },
+    });
   } else {
-    SUCCESS = myDB.add(fruit, size);
+    savedFruit = await prisma.fruit.create({
+      data: { ...body, isEaten: Boolean(body.isEaten), id: undefined },
+    });
   }
-  if (SUCCESS) {
-    return Response.redirect(url.origin + "/partials/fruit-table");
+
+  if (Boolean(savedFruit)) {
+    return Response.redirect(url.origin + "/fruits/partials/fruit-table");
   }
   return new Response("Apples aren't accepted", {
     status: 404,
@@ -25,13 +36,11 @@ export const POST: APIRoute = async ({ url, request }) => {
 };
 
 export const DELETE: APIRoute = async ({ url, request }) => {
-  let SUCCESS = false;
   const formData = await request.formData();
-  const body = Object.fromEntries(formData.entries()) as Pick<IEntry, "id">;
+  const body = Object.fromEntries(formData.entries()) as unknown as Fruit;
   if (body?.id) {
-    SUCCESS = myDB.delete(body.id);
-    console.log(myDB.rows);
-    return Response.redirect(url.origin + "/partials/fruit-table");
+    await prisma.fruit.delete({ where: { id: body.id } });
+    return Response.redirect(url.origin + "/fruits/partials/fruit-table");
   }
 
   return new Response("Can't delete what I don't have!", {

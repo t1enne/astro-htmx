@@ -21,7 +21,6 @@ export class Toaster extends LitElement {
     document.addEventListener("htmx:responseError", (e: any) => {
       const text = e.detail.xhr.response;
       const toast: IToast = { text, type: "error" };
-      console.log(toast);
       this.toasts.push(toast);
     });
   }

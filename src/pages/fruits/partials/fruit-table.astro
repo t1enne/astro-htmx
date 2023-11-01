@@ -1,0 +1,67 @@
+---
+import { prisma } from "../../../../prisma/seed";
+const fruits = await prisma.fruit.findMany({
+  include: {
+    owner: true,
+  },
+});
+let error = Astro.response.statusText;
+const status = Astro.response.status || 200;
+if (status >= 400 && 499 >= status) {
+  console.warn(`Found error! ${error}`);
+}
+---
+
+<table id="fruit-table">
+  <thead>
+    <tr>
+      <th class="w-1/12">#</th>
+      <th class="w-4/12">Fruit</th>
+      <th class="w-4/12">Size</th>
+      <th class="w-1/12">Eaten</th>
+      <th class="w-1/12">User</th>
+      <th class="w-1/12">Actions</th>
+    </tr>
+    <tbody>
+      {
+        fruits.map((fruit, idx) => {
+          return (
+            <tr>
+              <td> {idx + 1} </td>
+              <td> {fruit.name} </td>
+              <td> {fruit.size} </td>
+              <td class="text-center">
+                <span
+                  class={`material-symbols-outlined text-sm ${
+                    fruit.isEaten ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  {fruit.isEaten ? "done" : "close"}
+                </span>{" "}
+              </td>
+              <td>{fruit.owner.name}</td>
+              <td class="flex gap-1">
+                <a
+                  href="#delete"
+                  role="button"
+                  class="outline inline-flex border-red-500 color-red-500 p-2"
+                  @click={`openDeleteModal(${JSON.stringify(fruit)})`}
+                >
+                  <span class="material-symbols-outlined text-xs">delete</span>
+                </a>
+                <a
+                  href="#edit"
+                  @click={`openUpsertModal(${JSON.stringify(fruit)});`}
+                  role="button"
+                  class="outline inline-flex p-2"
+                >
+                  <span class="material-symbols-outlined text-xs">edit</span>
+                </a>
+              </td>
+            </tr>
+          );
+        })
+      }
+    </tbody>
+  </thead>
+</table>
